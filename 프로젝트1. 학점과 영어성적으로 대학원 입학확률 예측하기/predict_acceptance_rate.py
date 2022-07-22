@@ -1,16 +1,17 @@
 import tensorflow as tf
 import pandas as pd
+import numpy as np
 
+
+# CSV 데이터 가져오기 & 전처리
 data = pd.read_csv("gpascore.csv")
 
 data = data.dropna()  # 값이 없는 row나 column을 제거해주는 함수
-
 # data = data.dropna(): 빈 칸 채우는 함수
 # data['gpa']: 'gpa' column만 출력
 # data['gpa'].min(): 'gpa' column의 최솟값
 # data['gpa'].max(): 'gpa' column의 최댓값
 # data['gpa'].count(): 'gpa' column의 개수
-
 
 train_x = []
 for i, rows in data.iterrows():
@@ -31,6 +32,7 @@ model = tf.keras.models.Sequential(
     ]
 )
 
+
 # model compile
 model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
 # adam: 가장 많이 쓰이는 optimizer
@@ -38,4 +40,11 @@ model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"]
 
 
 # model 학습
-model.fit(train_x, train_y, epochs=10)  # epochs: 학습 횟수
+model.fit(np.array(train_x), np.array(train_y), epochs=1000)
+# 학습 데이터는 numpy array로 넣어야 함
+# epochs: 학습 횟수
+
+
+# 예측하기!
+result = model.predict([[750, 3.70, 3]])
+print(result)
