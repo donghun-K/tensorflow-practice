@@ -59,7 +59,9 @@ model.fit(
     train_x, train_y, validation_data=(test_x, test_y), epochs=5
 )  # validation_data: epoch 1회 끝날 때마다 모델 평가
 
-
 # score = model.evaluate(test_x, test_y) 모델 정확도 평가
 # print(score)
 # training accuracy > test accuracy가 되는 현상을 overfitting이라고 함
+
+
+model.save("model1")  # 전체 모델 저장하기
