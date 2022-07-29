@@ -47,6 +47,15 @@ model = tf.keras.Sequential(
     ]
 )
 
+# weights만 저장하기
+callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath="checkpoint/weights1",
+    monitor="val_acc",
+    mode="max",  # val_acc가 최대가 되는 checkpoint만 저장
+    save_weights_only=True,
+    save_freq="epoch",
+)
+
 model.summary()  # model의 아웃라인 보여주기
 
 model.compile(
@@ -56,12 +65,35 @@ model.compile(
 )
 
 model.fit(
-    train_x, train_y, validation_data=(test_x, test_y), epochs=5
-)  # validation_data: epoch 1회 끝날 때마다 모델 평가
-
+    train_x, train_y, validation_data=(test_x, test_y), epochs=5, callbacks=[callback]
+)
+# validation_data: epoch 1회 끝날 때마다 모델 평가
 # score = model.evaluate(test_x, test_y) 모델 정확도 평가
 # print(score)
 # training accuracy > test accuracy가 되는 현상을 overfitting이라고 함
 
 
 model.save("model1")  # 전체 모델 저장하기
+
+# weights만 로드하기
+model2 = tf.keras.Sequential(
+    [
+        tf.keras.layers.Conv2D(
+            32, (3, 3), padding="same", activation="relu", input_shape=(28, 28, 1)
+        ),
+        tf.keras.layers.MaxPooling2D((2, 2)),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dense(
+            len(class_names),
+            activation="softmax",
+        ),
+    ]
+)
+model2.compile(
+    loss="sparse_categorical_crossentropy",
+    optimizer="adam",
+    metrics=["accuracy"],
+)
+model2.load_weights("checkpoint/weights1")
+model2.evaluate(test_x, test_y)
